@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:training_app/pages/v5/add_exercise_page.dart';
+import 'package:training_app/pages/add_exercise_page.dart';
 import 'package:training_app/ui/constants.dart';
 import 'package:training_app/ui/controls.dart';
 import 'package:training_app/ui/faker.dart';

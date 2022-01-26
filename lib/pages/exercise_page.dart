@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import "package:flutter/material.dart";
 import 'package:flutter/rendering.dart';
-import 'package:training_app/pages/v5/all_exercises_page.dart';
+import 'package:training_app/pages/all_exercises_page.dart';
 import 'package:training_app/ui/constants.dart';
 import 'package:training_app/ui/controls.dart';
 import 'package:training_app/ui/counter.dart';
