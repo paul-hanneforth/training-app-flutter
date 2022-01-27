@@ -18,7 +18,8 @@ enum StandardIconType {
 enum SmallIconType {
   add,
   remove,
-  delete
+  delete,
+  restoreFromTrash,
 }
 
 class SmallIconButton extends StatefulWidget {
@@ -49,8 +50,22 @@ class _SmallIconButtonState extends State<SmallIconButton> {
   static const double fontSize = 42.88 / Constants.ratio;
 
   double gradientProgression = 0.0; 
+  double completionProgression = 0.0;
   bool longPressConfirmed = false;
   Timer timer = Timer.periodic(const Duration(seconds: 1), (timer) { });
+
+  void triggerCompletionGradient() {
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      final double updatedCompletionProgression = completionProgression += 0.01;
+        if(updatedCompletionProgression <= 1.05) {
+          setState(() {
+            completionProgression = updatedCompletionProgression;
+          });
+        } else {
+          timer.cancel();
+        }
+    });
+  }
 
   void onTapDown(TapDownDetails e) {
     // not used
@@ -77,6 +92,7 @@ class _SmallIconButtonState extends State<SmallIconButton> {
           timer.cancel();
 
           longPressConfirmed = true;
+          triggerCompletionGradient();
           widget.onLongPress!();
         }
       });
@@ -97,6 +113,31 @@ class _SmallIconButtonState extends State<SmallIconButton> {
     }
   }
 
+  LinearGradient progressionGradient() {
+    return LinearGradient(
+      colors: [
+        Colors.transparent,
+        widget.color.withOpacity(0.10)
+      ],
+      stops: [1.0 - gradientProgression, 1.0 - gradientProgression],
+      begin: FractionalOffset.topCenter,
+      end: FractionalOffset.bottomCenter,
+      tileMode: TileMode.decal
+    );
+  }
+  LinearGradient completionGradient() {
+    return LinearGradient(
+      colors: [
+        Colors.transparent,
+        widget.color.withOpacity(0.125)
+      ],
+      stops: [1 - completionProgression, 1 - completionProgression],
+      begin: FractionalOffset.topCenter,
+      end: FractionalOffset.bottomCenter,
+      tileMode: TileMode.decal
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -106,33 +147,32 @@ class _SmallIconButtonState extends State<SmallIconButton> {
           height: buttonSize,
           decoration: widget.onLongPress != null ? BoxDecoration(
             borderRadius: BorderRadius.circular(borderRadius),
-            gradient: LinearGradient(
-              colors: [
-                Colors.transparent,
-                widget.color.withOpacity(0.10)
-              ],
-              stops: [1.0 - gradientProgression, 1.0 - gradientProgression],
-              begin: FractionalOffset.topCenter,
-              end: FractionalOffset.bottomCenter,
-              tileMode: TileMode.decal
-            )
+            gradient: progressionGradient()
           ) : null,
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: Theme(
-              data: ThemeData(
-                splashColor: widget.onLongPress != null ? Colors.transparent : null,
-                highlightColor: widget.onLongPress != null ? Colors.transparent : null
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(borderRadius),
-                onTap: widget.onTap,
-                // onTapDown: widget.onLongPress != null ? onTapDown : null,
-                // onTapCancel: widget.onLongPress != null ? onTapCancel : null,
-                onHighlightChanged: widget.onLongPress != null ? onHighlightChanged : null,
-                child: Center(
-                  child: SmallIcon(widget.iconType, color: widget.color),
+          child: Container(
+            width: buttonSize,
+            height: buttonSize,
+            decoration: widget.onLongPress != null ? BoxDecoration(
+              borderRadius: BorderRadius.circular(borderRadius),
+              gradient: completionGradient()
+            ) : null,
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(borderRadius),
+              child: Theme(
+                data: ThemeData(
+                  splashColor: widget.onLongPress != null ? Colors.transparent : null,
+                  highlightColor: widget.onLongPress != null ? Colors.transparent : null
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  onTap: widget.onTap,
+                  // onTapDown: widget.onLongPress != null ? onTapDown : null,
+                  // onTapCancel: widget.onLongPress != null ? onTapCancel : null,
+                  onHighlightChanged: widget.onLongPress != null ? onHighlightChanged : null,
+                  child: Center(
+                    child: SmallIcon(widget.iconType, color: widget.color),
+                  ),
                 ),
               ),
             ),
@@ -181,7 +221,8 @@ class SmallIcon extends StatelessWidget {
   final Map icons = const <SmallIconType, List<dynamic>> {
     SmallIconType.add: [Icons.add, 68.13 / Constants.ratio],
     SmallIconType.remove: [Icons.remove, 68.13 / Constants.ratio],
-    SmallIconType.delete: [Icons.delete, 75.7 / Constants.ratio]
+    SmallIconType.delete: [Icons.delete, 75.7 / Constants.ratio],
+    SmallIconType.restoreFromTrash: [Icons.restore_from_trash, 75.7 / Constants.ratio]
   };
 
   @override

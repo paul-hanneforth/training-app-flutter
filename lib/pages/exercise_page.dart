@@ -198,10 +198,10 @@ class _ExercisePageState extends State<ExercisePage> {
 
     if(selected) {
     return SmallIconButton(
-      iconType: SmallIconType.delete,
+      iconType: SmallIconType.restoreFromTrash,
       onTap: () {},
-      color: const Color(0xFFEB5757),
-      label: label.toString(),
+      color: const Color(0xFF419749), // const Color(0xFFEB5757),
+      // label: label.toString(),
       onLongPress: () {},
     );
     }
